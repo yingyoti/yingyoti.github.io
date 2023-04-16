@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>World Clocks</title>
+	<style>
+		.container {
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: center;
+			align-items: center;
+			margin-top: 5px; /* updated */
+		}
+
+		canvas {
+			width: 20%;
+			height: 200px;
+			display: block;
+			margin: 0 5px;
+			background-color: #eee;
+			border: 1px solid #ccc;
+			box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.75);
+		}
+
+		body {
+			background: radial-gradient(circle, #ff1493, #ff4500, #ffd700, #00ff7f, #00bfff);
+			color: #fff;
+			font-family: Arial, sans-serif;
+		}
+		h1{
+			margin: 20px;
+			padding: 20px;
+		}
+	</style>
+</head>
+<body>
+	<h1 style="text-align: center;">World Clocks</h1>
+	<div class="container">
+		<canvas id="bangkok-clock" width="200" height="200"></canvas>
+		<canvas id="tokyo-clock" width="200" height="200"></canvas>
+		<canvas id="london-clock" width="200" height="200"></canvas>
+	</div>
+	<div class="container" style="margin-top: 20px;">
+		<canvas id="sydney-clock" width="200" height="200"></canvas>
+		<canvas id="newyork-clock" width="200" height="200"></canvas>
+		<canvas id="beijing-clock" width="200" height="200"></canvas>
+	</div>
+	<script>
+	function drawClock(city, offset) {
+	  var canvas = document.getElementById(city + "-clock");
+	  var ctx = canvas.getContext("2d");
+	  var radius = canvas.width / 2;
+
+	  ctx.translate(radius, radius);
+	  radius = radius * 0.9;
+	  setInterval(function() {
+		drawFace(ctx, radius);
+		drawNumbers(ctx, radius, city);
+		drawTime(ctx, radius, city, offset);
+		drawHand(ctx, drawTime(ctx, radius, city, offset).hourHand, radius * 0.5, radius * 0.07, ["#000000", "#ff1493"]);
+		drawHand(ctx, drawTime(ctx, radius, city, offset).minuteHand, radius * 0.8, radius * 0.07, ["#0000ff", "#00ff7f"]);
+		drawHand(ctx, drawTime(ctx, radius, city, offset).secondHand, radius * 0.9, radius * 0.02, ["#ff0000", "#ffff00"]);
+	  }, 1000);
+	}
+
+	
+	function drawFace(ctx, radius) {
+		ctx.beginPath();
+		ctx.arc(0, 0, radius, 0, 2*Math.PI);
+		ctx.fillStyle = "#fff";
+		ctx.fill();
+		var grad = ctx.createRadialGradient(0,0,radius*0.95, 0,0,radius*1.05);
+		grad.addColorStop(0, '#333');
+		grad.addColorStop(0.5, '#ddd');
+		grad.addColorStop(1, '#333');
+		ctx.strokeStyle = grad;
+		ctx.lineWidth = radius*0.1;
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(0, 0, radius*0.1, 0, 2*Math.PI);
+		ctx.fillStyle = '#333';
+		ctx.fill();
+	}
+	
+	function drawNumbers(ctx, radius, city) {
+	  var ang;
+	  var num;
+	  ctx.font = radius*0.15 + "px Arial";
+	  ctx.textBaseline="middle";
+	  ctx.textAlign="center";
+	  ctx.fillStyle = '#555';
+	  for(num = 1; num <= 12; num++){
+		ang = num * Math.PI / 6;
+		ctx.rotate(ang);
+		ctx.translate(0, -radius*0.85);
+		ctx.rotate(-ang);
+		ctx.fillText(num.toString(), 0, 0);
+		ctx.rotate(ang);
+		ctx.translate(0, radius*0.85);
+		ctx.rotate(-ang);
+	  }
+	  ctx.font = radius*0.1 + "px Arial";
+	  
+	  if(city === "bangkok")
+	  {
+		ctx.fillText("Bangkok", 0, -radius*0.4);
+	  }
+	  else if(city === "tokyo")
+	  {
+		ctx.fillText("Tokyo", 0, -radius*0.4);
+	  }
+	  else if(city === "london")
+	  {
+		ctx.fillText("London", 0, -radius*0.4);
+	  }
+	  else if(city === "sydney")
+	  {
+		ctx.fillText("Sydney", 0, -radius*0.4);
+	  }
+	  else if(city === "newyork")
+	  {
+		ctx.fillText("New York", 0, -radius*0.4);
+	  }
+	  else if(city === "beijing")
+	  {
+		ctx.fillText("Beijing", 0, -radius*0.4);
+	  }
+	}
+
+	function drawTime(ctx, radius, city, offset) {
+	  var now = new Date();
+	  var localTime = now.getTime();
+	  var localOffset = now.getTimezoneOffset() * 60000;
+	  var utc = localTime + localOffset;
+	  var cityOffset = offset * 3600000;
+	  var cityTime = utc + cityOffset;
+	  var cityDate = new Date(cityTime);
+
+	  var hour = cityDate.getHours();
+	  var minute = cityDate.getMinutes();
+	  var second = cityDate.getSeconds();
+	  //hour
+	  hour = hour % 12;
+	  hour =
+		(hour * Math.PI) / 6 +
+		(minute * Math.PI) / (6 * 60) +
+		(second * Math.PI) / (360 * 60);
+	  drawHand(ctx, hour, radius * 0.5, radius * 0.07, ["#000000", "#ff1493"]);
+	  //minute
+	  minute = (minute * Math.PI) / 30 + (second * Math.PI) / (30 * 60);
+	  drawHand(ctx, minute, radius * 0.8, radius * 0.07, ["#0000ff", "#00ff7f"]);
+	  // second
+	  second = (second * Math.PI) / 30;
+	  drawHand(ctx, second, radius * 0.9, radius * 0.02, ["#ff0000", "#ffff00"]);
+
+	  drawNumbers(ctx, radius, city);
+	}
+
+	function drawHand(ctx, pos, length, width, gradientColors) {
+		var gradient = ctx.createLinearGradient(0, 0, length, 0);
+		  
+		for (var i = 0; i < gradientColors.length; i++) {
+			gradient.addColorStop(i, gradientColors[i]);
+		}
+
+		ctx.beginPath();
+		ctx.lineWidth = width;
+		ctx.lineCap = "round";
+		ctx.moveTo(0, 0);
+		ctx.rotate(pos);
+		ctx.lineTo(0, -length);
+		ctx.strokeStyle = gradient;
+		ctx.stroke();
+		ctx.rotate(-pos);
+		ctx.lineTo(length, 0);
+	}
+		
+	drawClock("bangkok", 7);
+	drawClock("tokyo", 9);
+	drawClock("london", 0);
+	drawClock("sydney", 10);
+	drawClock("newyork", -4);
+	drawClock("beijing", 8);
+
+	</script>
+	</body>
+</html>
