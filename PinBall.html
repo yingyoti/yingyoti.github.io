@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pinball Game</title>
+    <style>
+		body {
+			background: linear-gradient(to bottom, #ffcccc, #ff99cc, #ff66cc, #ff33cc, #ff00cc);
+		}
+		
+        #canvas {
+		  margin: auto;
+		  display: block;
+		  border: 1px solid black;
+		  background-image: linear-gradient(to bottom, #99ffff, #ffffff, #99ffff);
+		}
+		
+		#container {
+		  display: flex;
+		  justify-content: space-between;
+		  align-items: center;
+		  height: 95vh;
+          padding: 10px;
+		}
+		
+		#start-button {
+          background-color: #333;
+          color: white;
+          padding: 5px 10px;
+          border: none;
+          border-radius: 5px;
+          font-size: 14px;
+          cursor: pointer;
+		  position: absolute;
+		  margin-left: 880px;
+		  margin-top: 540px;
+        }
+    </style>
+</head>
+<body>
+	<div id="container">
+		<canvas id="canvas" width="400" height="600"></canvas>
+		<button id="start-button">Start Game</button>
+	</div>
+    <script>
+        // Pinball variables
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var ballRadius = 10;
+        var x = canvas.width/2;
+        var y = canvas.height-30;
+        var dx = 2 * 1.4; // Increase speed by 40%
+		var dy = -2 * 1.4; // Increase speed by 40%
+        var paddleHeight = 10;
+        var paddleWidth = 75;
+        var paddleX = (canvas.width-paddleWidth)/2;
+        var rightPressed = false;
+        var leftPressed = false;
+        var brickRowCount = 5;
+        var brickColumnCount = 8;
+        var brickWidth = 40;
+        var brickHeight = 10;
+        var brickPadding = 10;
+        var brickOffsetTop = 30;
+        var totalBrickWidth = brickWidth * brickColumnCount + brickPadding * (brickColumnCount - 1);
+        var centerOffset = (canvas.width - totalBrickWidth) / 2;
+        var brickOffsetLeft = centerOffset;
+		// Array of brick colors
+		var brickColors = ["#ff9900", "#ff9900", "#ff9900", "#ff9900", "#ff9900"];
+        var bricks = [];
+        for(var c=0; c<brickColumnCount; c++) {
+            bricks[c] = [];
+            for(var r=0; r<brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+        }
+        var score = 0;
+        var lives = 6;
+		var startButton = document.getElementById("start-button");
+
+        // Draw ball function
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+            ctx.fillStyle = "#ff3333";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Draw paddle function
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#3333ff";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Draw bricks function
+		function drawBricks() {
+		  for(var c=0; c<brickColumnCount; c++) {
+			for(var r=0; r<brickRowCount; r++) {
+			  if(bricks[c][r].status == 1) {
+				var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+				var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+				bricks[c][r].x = brickX;
+				bricks[c][r].y = brickY;
+				
+				// Define gradient for brick color
+				var gradient = ctx.createLinearGradient(brickX + brickWidth / 2, brickY, brickX + brickWidth / 2, brickY + brickHeight);
+				gradient.addColorStop(0, brickColors[r % brickColors.length]);
+				gradient.addColorStop(1, "#ffffff");
+				
+				// Draw brick with gradient fill style
+				ctx.beginPath();
+				ctx.rect(brickX, brickY, brickWidth, brickHeight);
+				ctx.fillStyle = gradient;
+				ctx.fill();
+				ctx.closePath();
+			  }
+			}
+		  }
+		}
+		
+        // Draw score function
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Score: "+score, 8, 20);
+        }
+
+        // Draw lives function
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+        }
+
+        // Collision detection function
+		function collisionDetection() {
+			// Loop through all bricks and check if the ball collides with any of them
+			for(var c=0; c<brickColumnCount; c++) {
+				for(var r=0; r<brickRowCount; r++) {
+					var b = bricks[c][r];
+					if(b.status == 1) {
+						if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+							dy = -dy;
+							b.status = 0;
+							score++;
+							if(score == brickRowCount*brickColumnCount) {
+								// User won the game
+								setTimeout(function() {
+									alert("Congratulations! You won!");
+									document.location.reload();
+								}, 10);
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+    // Key down event listener
+    document.addEventListener("keydown", keyDownHandler, false);
+
+    // Key up event listener
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    // Key down handler function
+    function keyDownHandler(e) {
+        if(e.keyCode == 39) {
+            rightPressed = true;
+        }
+        else if(e.keyCode == 37) {
+            leftPressed = true;
+        }
+    }
+
+    // Key up handler function
+    function keyUpHandler(e) {
+        if(e.keyCode == 39) {
+            rightPressed = false;
+        }
+        else if(e.keyCode == 37) {
+            leftPressed = false;
+        }
+    }
+
+    // Mouse move event listener
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+
+    // Mouse move handler function
+    function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        if(relativeX > 0 && relativeX < canvas.width) {
+            paddleX = relativeX - paddleWidth/2;
+        }
+    }
+	
+	// Draw function
+    function predraw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw bricks
+        drawBricks();
+
+        // Draw ball
+        drawBall();
+
+        // Draw paddle
+        drawPaddle();
+
+        // Draw score
+        drawScore();
+
+        // Draw lives
+        drawLives();
+	}
+
+    // Draw function
+    function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw bricks
+        drawBricks();
+
+        // Draw ball
+        drawBall();
+
+        // Draw paddle
+        drawPaddle();
+
+        // Draw score
+        drawScore();
+
+        // Draw lives
+        drawLives();
+
+        // Collision detection
+        collisionDetection();
+
+        // Bounce off left and right walls
+        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+            dx = -dx;
+        }
+
+        // Bounce off top wall
+        if(y + dy < ballRadius) {
+            dy = -dy;
+        }
+        else if(y + dy > canvas.height-ballRadius) {
+            // Check if ball hits the paddle
+            if(x > paddleX && x < paddleX + paddleWidth) {
+                dy = -dy;
+            }
+            else {
+                lives--;
+                if(!lives) {
+                    alert("Game Over");
+                    document.location.reload();
+                }
+                else {
+                    x = canvas.width/2;
+                    y = canvas.height-30;
+                    dx = 3;
+                    dy = -3;
+                    paddleX = (canvas.width-paddleWidth)/2;
+                }
+            }
+        }
+
+        // Move paddle left or right
+        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+            paddleX += 7;
+        }
+        else if(leftPressed && paddleX > 0) {
+            paddleX -= 7;
+        }
+
+        // Move ball
+        x += dx;
+        y += dy;
+
+        // Call draw function again
+        requestAnimationFrame(draw);
+    }
+	
+	startButton.addEventListener("click", function() {
+        // Call draw function
+		draw();
+    });
+
+    predraw();
+</script>
+</body>
+</html>
