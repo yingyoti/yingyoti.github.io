@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dice Roll</title>
+	<style>
+    	.dice-container {
+			display: flex;
+			justify-content: space-around;
+			margin-bottom: 20px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		canvas {
+			border: 1px solid black;
+			display: block;
+			margin: 10px;
+		}
+		
+		.button-container {
+			display: flex;
+			justify-content: space-around;
+			margin-bottom: 20px;
+			position: absolute;
+			top: 80%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		
+		.canvas-1-container, .canvas-2-container{
+		  display: flex;
+		  flex-direction: column;
+		  justify-content: center;
+		  align-items: center;
+		}
+		
+		.centered-span {
+		  display: inline-block;
+		  text-align: center;
+		}
+	</style>
+</head>
+<body>
+		<div class="dice-container">
+			<div class="canvas-1-container">
+				<canvas id="dice-canvas-1" width="100" height="100"></canvas>
+				<span id="dice1" class="centered-span"></span>
+			</div>
+			<div class="canvas-2-container">
+				<canvas id="dice-canvas-2" width="100" height="100"></canvas>
+				<span id="dice2" class="centered-span"></span>
+			</div>
+		</div>
+		<div class="button-container">
+			<button onclick="rollDice()">Roll the Dice</button>
+		</div>
+	<script>
+		var canvas1 = document.getElementById('dice-canvas-1');
+		var ctx1 = canvas1.getContext('2d');
+
+		var canvas2 = document.getElementById('dice-canvas-2');
+		var ctx2 = canvas2.getContext('2d');
+
+		var angle = 0;
+		var rollAnimation;
+
+		function rollDice() {
+			// Stop the previous animation (if any)
+			cancelAnimationFrame(rollAnimation);
+
+			// Start the spinning animation
+			var randomNum1 = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6 for dice one
+			var randomNum2 = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6 for dice two
+			while (randomNum2 === randomNum1) { // Ensure the two numbers are different
+				randomNum2 = Math.floor(Math.random() * 6) + 1;
+			}
+			animateDice(randomNum1, ctx1, canvas1);
+			animateDice(randomNum2, ctx2, canvas2);
+
+			// Draw the dice face once the animation is finished
+			setTimeout(function() {
+				drawDice(randomNum1, ctx1, canvas1);
+			}, 1000);
+			
+			setTimeout(function() {
+				drawDice(randomNum2, ctx2, canvas2);
+			}, 1000);
+		}
+
+		function animateDice(finalNum, ctx, canvas) {
+			var startTime = Date.now();
+			var duration = 1000; // Animation duration in milliseconds
+
+			function animate() {
+				// Calculate the angle of rotation based on the elapsed time and the duration of the animation
+				var timeElapsed = Date.now() - startTime;
+				var progress = timeElapsed / duration;
+				var rotation = angle + (Math.PI * 2 * progress);
+
+				// Clear the canvas before drawing the new dice face
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				// Draw the dice face at the current angle of rotation
+				drawDiceFace(rotation, ctx, canvas, finalNum);
+
+				if (timeElapsed < duration) {
+					// Continue the animation if the duration has not been reached
+					rollAnimation = requestAnimationFrame(animate);
+				} else {
+					// Stop the animation and draw the final dice face
+					cancelAnimationFrame(rollAnimation);
+					drawDice(finalNum, ctx, canvas);
+				}
+			}
+
+			// Start the animation
+			rollAnimation = requestAnimationFrame(animate);
+		}
+
+		function drawDiceFace(rotation, ctx, canvas, finalNum) {
+			// Save the current context state before transforming it
+			ctx.save();
+
+			// Translate the context to the center of the canvas
+			ctx.translate(canvas.width / 2, canvas.height / 2);
+
+			// Rotate the context by the specified angle
+			ctx.rotate(rotation);
+
+			// Draw the dice face
+			ctx.fillStyle = 'white';
+			ctx.fillRect(-50, -50, 100, 100);
+			ctx.strokeStyle = 'black';
+			ctx.strokeRect(-50, -50, 100, 100);
+
+			// Draw the dots or the final number
+			if (rollAnimation) {
+				ctx.font = 'bold 48px sans-serif';
+				ctx.textAlign = 'center';
+				ctx.fillStyle = 'black';
+				ctx.fillText('?', 0, 15);
+			} 
+			else {
+				switch (Math.floor(rotation / (Math.PI / 2)) % 4) {
+					case 0:
+						if (finalNum === 1) {
+							drawDot(0, 0, ctx);
+						} else {
+							drawDot(-25, -25, ctx);
+							drawDot(25, -25, ctx);
+						}
+						break;
+					case 1:
+						if (finalNum === 2) {
+							drawDot(-25, -25, ctx);
+							drawDot(25, -25, ctx);
+						} else {
+							drawDot(0, 0, ctx);
+							drawDot(-50, -50, ctx);
+							drawDot(50, 50, ctx);
+						}
+						break;
+					case 2:
+						if (finalNum === 3) {
+							drawDot(-25, -25, ctx);
+							drawDot(0, 0, ctx);
+							drawDot(25, 25, ctx);
+						} else {
+							drawDot(-25, -25, ctx);
+							drawDot(25, -25, ctx);
+							drawDot(-25, 25, ctx);
+							drawDot(25, 25, ctx);
+						}
+						break;
+					case 3:
+						if (finalNum === 4) {
+							drawDot(-25, -25, ctx);
+							drawDot(-25, 25, ctx);
+							drawDot(25, -25, ctx);
+							drawDot(25, 25, ctx);
+						} else if (finalNum === 5) {
+							drawDot(-25, -25, ctx);
+							drawDot(-25, 25, ctx);
+							drawDot(0, 0, ctx);
+							drawDot(25, -25, ctx);
+							drawDot(25, 25, ctx);
+						} else {
+							drawDot(-25, -25, ctx);
+							drawDot(-25, 25, ctx);
+							drawDot(25, -25, ctx);
+							drawDot(25, 25, ctx);
+							drawDot(0, 0, ctx);
+						}
+						break;
+				}
+			}
+
+			// Restore the context to its previous state
+			ctx.restore();
+		}
+
+
+		function drawDot(x, y, ctx) {
+			ctx.beginPath();
+			ctx.arc(x + 50, y + 50, 5, 0, Math.PI * 2);
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.closePath();
+		}
+		
+		function drawDice(num, ctx, canvas) {
+			// Clear the canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			ctx.fillStyle = 'white';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.strokeStyle = 'black';
+			ctx.strokeRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = 'black';
+			
+			// Draw the dots
+			switch (num) {
+				case 1:
+					drawDot(0, 0, ctx);
+					canvas.parentElement.querySelector('span').innerText = '1';
+					break;
+				case 2:
+					drawDot(-25, -25, ctx);
+					drawDot(25, 25, ctx);
+					canvas.parentElement.querySelector('span').innerText = '2';
+					break;
+				case 3:
+					drawDot(-25, -25, ctx);
+					drawDot(0, 0, ctx);
+					drawDot(25, 25, ctx);
+					canvas.parentElement.querySelector('span').innerText = '3';
+					break;
+				case 4:
+					drawDot(-25, -25, ctx);
+					drawDot(-25, 25, ctx);
+					drawDot(25, -25, ctx);
+					drawDot(25, 25, ctx);
+					canvas.parentElement.querySelector('span').innerText = '4';
+					break;
+				case 5:
+					drawDot(-25, -25, ctx);
+					drawDot(-25, 25, ctx);
+					drawDot(0, 0, ctx);
+					drawDot(25, -25, ctx);
+					drawDot(25, 25, ctx);
+					canvas.parentElement.querySelector('span').innerText = '5';
+					break;
+				case 6:
+					drawDot(-25, -25, ctx);
+					drawDot(-25, 0, ctx);
+					drawDot(-25, 25, ctx);
+					drawDot(25, -25, ctx);
+					drawDot(25, 0, ctx);
+					drawDot(25, 25, ctx);
+					canvas.parentElement.querySelector('span').innerText = '6';
+					break;
+				default:
+					console.error('Invalid dice number:', num);
+			}
+			
+			// Reset the angle of rotation
+			angle = 0;
+		}
+	</script>
+
+</body>
+</html>
+
