@@ -19,19 +19,28 @@
         pointer-events: none;
         z-index: 1;
       }
-	  #score-board {
+	  .score-board {
         position: absolute;
-        top: 20px;
-        right: 20px;
         font-size: 24px;
         font-weight: bold;
+      }
+      #burst-board {
+        top: 20px;
+        right: 20px;
+		color: green;
+      }
+      #miss-board {
+        top: 50px;
+        right: 20px;
+        color: red;
       }
     </style>
   </head>
   <body>
-    <canvas id="balloon-canvas"></canvas>
+	<canvas id="balloon-canvas"></canvas>
     <canvas id="crosshair-canvas"></canvas>
-	<div id="score-board">Balloons Burst: 0</div>
+    <div id="burst-board" class="score-board">Balloon Bursted: 0</div>
+    <div id="miss-board" class="score-board">Balloon Missed: 0</div>
     <script>
     const balloonCanvas = document.getElementById('balloon-canvas');
     const balloonCtx = balloonCanvas.getContext('2d');
@@ -44,20 +53,48 @@
         size: 0.5,
         color: '#FF5733'
     };
-	  
+	
+	const getRandomColor = () => {
+	  const color = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+	  return color !== '#ffffff' ? color : getRandomColor(); // check if color is white and recursively call function again if it is
+	};
 	let balloonsExploded = 0; // New variable for score
+	let balloonsMissed = 0;
+	let balloonCount = 0;
 	  
     function createBalloon() {
-        const balloon = {
-          x: Math.random() * balloonCanvas.width,
-          y: balloonCanvas.height,
-          r: 14 + Math.random() * 21,
-          dy: 2 + Math.random() * 4,
-          color: '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
-        };
-		
-        balloons.push(balloon);
-    }
+	  if (balloonCount > 29) {
+		if (balloonsExploded > balloonsMissed) 
+		{
+			alert("You win!!! You burst more balloons than you missed.");
+		} 
+		else 
+		{  
+			alert("You lose. You missed more balloons than you burst.");
+			
+		}
+
+		clearInterval(createIntervalId);
+		clearInterval(updateIntervalId);
+
+		return;
+	  }
+
+	  if (balloons.length <= 29) // Only create new balloon if there are less than 50 balloons on screen
+	  { 
+		const balloon = {
+		  x: Math.random() * balloonCanvas.width,
+		  y: balloonCanvas.height,
+		  r: 14 + Math.random() * 21,
+		  dy: 2 + Math.random() * 4,
+		  color: getRandomColor()
+		};
+
+		balloons.push(balloon);
+	  }
+
+	  balloonCount++;
+	}
 
     function updateBalloons() {
         for (let i = balloons.length - 1; i >= 0; i--) {
@@ -65,22 +102,39 @@
           balloon.y -= balloon.dy;
           if (balloon.y + balloon.r < 0) {
             balloons.splice(i, 1);
+			if (!balloon.clicked) {
+				balloonsMissed++;
+				const missBoard = document.getElementById('miss-board');
+				missBoard.textContent = 'Balloons Missed: ' + balloonsMissed;
+			  }
           }
         }
     }
 
     function drawBalloons() {
-        // Clear the canvas
-        clearCanvas(balloonCtx, balloonCanvas);
+	  // Clear the canvas
+	  clearCanvas(balloonCtx, balloonCanvas);
 
-        // Draw the balloons
-        for (const balloon of balloons) {
-          balloonCtx.beginPath();
-          balloonCtx.ellipse(balloon.x, balloon.y, balloon.r * 0.8, balloon.r, 0, 0, 2 * Math.PI);
-          balloonCtx.fillStyle = balloon.color;
-          balloonCtx.fill();
-        }
-    }
+	  // Draw the balloons
+	  for (const balloon of balloons) {
+		// Calculate the maximum height of the rope
+		const maxRopeHeight = balloon.y + balloon.r * 2.5;
+
+		// Draw the rope
+		balloonCtx.beginPath();
+		balloonCtx.moveTo(balloon.x, balloon.y);
+		balloonCtx.lineTo(balloon.x, maxRopeHeight);
+		balloonCtx.strokeStyle = 'gray';
+		balloonCtx.lineWidth = balloon.r / 25; // adjust line width based on balloon size
+		balloonCtx.stroke();
+
+		// Draw the balloon
+		balloonCtx.beginPath();
+		balloonCtx.ellipse(balloon.x, balloon.y, balloon.r * 0.8, balloon.r, 0, 0, 2 * Math.PI);
+		balloonCtx.fillStyle = balloon.color;
+		balloonCtx.fill();
+	  }
+	}
 
     function drawCrosshair() {
         // Clear the canvas
@@ -88,25 +142,25 @@
 
         // Draw the circle
         crosshairCtx.beginPath();
-        crosshairCtx.arc(crosshair.x, crosshair.y, 10, 0, 2 * Math.PI);
-        crosshairCtx.strokeStyle = '#000000';
-        crosshairCtx.lineWidth = 2;
+        crosshairCtx.arc(crosshair.x, crosshair.y, 6, 0, 2 * Math.PI);
+        crosshairCtx.strokeStyle = crosshair.color;
+        crosshairCtx.lineWidth = 1.5;
         crosshairCtx.stroke();
 
         // Draw the horizontal line
         crosshairCtx.beginPath();
-        crosshairCtx.moveTo(crosshair.x - 10, crosshair.y);
-        crosshairCtx.lineTo(crosshair.x + 10, crosshair.y);
+        crosshairCtx.moveTo(crosshair.x - 6, crosshair.y);
+        crosshairCtx.lineTo(crosshair.x + 6, crosshair.y);
         crosshairCtx.strokeStyle = crosshair.color;
-        crosshairCtx.lineWidth = 2;
+        crosshairCtx.lineWidth = 1.5;
         crosshairCtx.stroke();
 
         // Draw the vertical line
         crosshairCtx.beginPath();
-        crosshairCtx.moveTo(crosshair.x, crosshair.y - 10);
-        crosshairCtx.lineTo(crosshair.x, crosshair.y + 10);
+        crosshairCtx.moveTo(crosshair.x, crosshair.y - 6);
+        crosshairCtx.lineTo(crosshair.x, crosshair.y + 6);
         crosshairCtx.strokeStyle = crosshair.color;
-        crosshairCtx.lineWidth = 2;
+        crosshairCtx.lineWidth = 1.5;
 		crosshairCtx.stroke();
     }
 
@@ -127,8 +181,8 @@
 
 		// Update balloons exploded count
 		balloonsExploded++;
-		const scoreBoard = document.getElementById('score-board');
-		scoreBoard.textContent = 'Balloons Burst: ' + balloonsExploded;
+		const scoreBoard = document.getElementById('burst-board');
+		scoreBoard.textContent = 'Balloon Bursted: ' + balloonsExploded;
 
 		// Render particles
 		let frame = 0;
@@ -184,11 +238,11 @@
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 	}
 
-	setInterval(() => {
+	const createIntervalId = setInterval(() => {
 	  createBalloon();
 	}, 1000);
 
-	setInterval(() => {
+	const updateIntervalId = setInterval(() => {
 	  updateBalloons();
 	  drawBalloons();
 	  drawCrosshair();
