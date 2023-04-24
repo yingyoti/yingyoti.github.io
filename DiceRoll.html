@@ -29,7 +29,7 @@
 			transform: translate(-50%, -50%);
 		}
 		
-		.canvas-1-container, .canvas-2-container{
+		.canvas-1-container, .canvas-2-container, .canvas-3-container{
 		  display: flex;
 		  flex-direction: column;
 		  justify-content: center;
@@ -52,6 +52,10 @@
 				<canvas id="dice-canvas-2" width="100" height="100"></canvas>
 				<span id="dice2" class="centered-span"></span>
 			</div>
+			<div class="canvas-3-container">
+				<canvas id="dice-canvas-3" width="100" height="100"></canvas>
+				<span id="dice3" class="centered-span"></span>
+			</div>
 		</div>
 		<div class="button-container">
 			<button onclick="rollDice()">Roll the Dice</button>
@@ -62,6 +66,9 @@
 
 		var canvas2 = document.getElementById('dice-canvas-2');
 		var ctx2 = canvas2.getContext('2d');
+		
+		var canvas3 = document.getElementById('dice-canvas-3');
+		var ctx3 = canvas3.getContext('2d');
 
 		var angle = 0;
 		var rollAnimation;
@@ -73,11 +80,17 @@
 			// Start the spinning animation
 			var randomNum1 = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6 for dice one
 			var randomNum2 = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6 for dice two
+			var randomNum3 = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6 for dice three
 			while (randomNum2 === randomNum1) { // Ensure the two numbers are different
 				randomNum2 = Math.floor(Math.random() * 6) + 1;
 			}
+			while (randomNum3 === randomNum1 || randomNum3 === randomNum2) { // Ensure the two numbers are different
+				randomNum3 = Math.floor(Math.random() * 6) + 1;
+			}
+			
 			animateDice(randomNum1, ctx1, canvas1);
 			animateDice(randomNum2, ctx2, canvas2);
+			animateDice(randomNum3, ctx3, canvas3);
 
 			// Draw the dice face once the animation is finished
 			setTimeout(function() {
@@ -86,6 +99,10 @@
 			
 			setTimeout(function() {
 				drawDice(randomNum2, ctx2, canvas2);
+			}, 1000);
+			
+			setTimeout(function() {
+				drawDice(randomNum3, ctx3, canvas3);
 			}, 1000);
 		}
 
