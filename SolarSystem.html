@@ -20,34 +20,29 @@
   <body>
     <canvas id="canvas"></canvas>
     <script>
-      // Define canvas and context variables
-      var canvas = document.getElementById("canvas");
-      var ctx = canvas.getContext("2d");
+    // Define canvas and context variables
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
 
-      // Set canvas dimensions to match screen size
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Set canvas dimensions to match screen size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-      // Define constants
-      var AU = canvas.width / 10; // Astronomical Unit
-      var SUN_RADIUS = 50; // Sun radius in pixels
-      var PLANET_RADIUS = [0, 5, 10, 15, 20, 25, 30, 35, 12.5];
-      var PLANET_ORBIT = [0, 0.4, 0.7, 1, 1.5, 2.8, 4.5, 5.9, 7.5];
-      var PLANET_SPEED = [0, 0.5, 0.4, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05];
+    // Define constants
+    var AU = canvas.width / 10; // Astronomical Unit
+    var SUN_RADIUS = 35; // Sun radius in pixels
+    var PLANET_RADIUS = [0, 5, 13, 15, 10, 25, 22, 15, 15, 11];
+	var PLANET_ORBIT = [0, 0.3, 0.5, 0.8, 1.1, 1.45, 1.8, 2.2, 2.6, 3.0];
+	var PLANET_SPEED = [0, 0.5, 0.4, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05, 0.04];
+    // Define variables
+    var sunX = canvas.width / 2;
+    var sunY = canvas.height / 2;
+    var planetX = [];
+    var planetY = [];
+    var planetAngle = [];
 
-      // Define variables
-      var sunX = canvas.width / 2;
-      var sunY = canvas.height / 2;
-      var planetX = [];
-      var planetY = [];
-      var planetAngle = [];
-	  
-	  var RING_INNER_RADIUS = 40;
-      var RING_OUTER_RADIUS = 80;
-      var RING_COLOR = "#ccccb3";
-
-      // Draw the Sun
-      function drawSun() {
+    // Draw the Sun
+    function drawSun() {
         var gradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, SUN_RADIUS);
         gradient.addColorStop(0, "#fff200");
         gradient.addColorStop(0.5, "#ffb100");
@@ -56,71 +51,51 @@
         ctx.arc(sunX, sunY, SUN_RADIUS, 0, 2 * Math.PI);
         ctx.fillStyle = gradient;
         ctx.fill();
-      }
+	}
 
-
-      // Draw a planet
-function drawPlanet(planetIndex) {
-  ctx.beginPath();
-  var x = sunX + PLANET_ORBIT[planetIndex] * AU * Math.cos(planetAngle[planetIndex]);
-  var y = sunY + PLANET_ORBIT[planetIndex] * AU * Math.sin(planetAngle[planetIndex]);
-  planetX[planetIndex] = x;
-  planetY[planetIndex] = y;
-  ctx.arc(x, y, PLANET_RADIUS[planetIndex], 0, 2 * Math.PI);
-  ctx.fillStyle = ["#b8b8b8", "#ccccb3", "#ffcc00", "#4d4dff", "#ff471a", "#d2b48c", "#00ced1", "#4169e1"][planetIndex];
-  ctx.fill();
+	// Draw a planet
+	function drawPlanet(planetIndex) {
+		ctx.beginPath();
+		var x = sunX + PLANET_ORBIT[planetIndex] * AU * Math.cos(planetAngle[planetIndex]);
+		var y = sunY + PLANET_ORBIT[planetIndex] * AU * Math.sin(planetAngle[planetIndex]);
+		planetX[planetIndex] = x;
+		planetY[planetIndex] = y;
+		ctx.arc(x, y, PLANET_RADIUS[planetIndex], 0, 2 * Math.PI);
+		ctx.fillStyle = ["#b8b8b8", "#ccccb3", "#ffcc00", "#4d4dff", "#ff471a", "#d2b48c", "#00ced1", "#4169e1", "#4169e1", "#b8b8b8"][planetIndex];
+		ctx.fill();
   
-  // Draw planet name label
-  ctx.fillStyle = '#ffffff';
-  ctx.font = "14px Arial";
-  ctx.fillText(['', 'Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'][planetIndex], x - PLANET_RADIUS[planetIndex], y + PLANET_RADIUS[planetIndex] + 15);
-}
+		// Draw planet name label
+		ctx.fillStyle = '#ffffff';
+		ctx.font = "10px Arial";
+		ctx.fillText(['', 'Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'][planetIndex], x - PLANET_RADIUS[planetIndex], y + PLANET_RADIUS[planetIndex] + 15);
+	}
 
-// Draw the ring around Saturn
-function drawRing() {
-  ctx.beginPath();
-  ctx.lineWidth = 5;
-  var x = planetX[6]; // Saturn's x coordinate
-  var y = planetY[6]; // Saturn's y coordinate
-  ctx.arc(x, y, RING_OUTER_RADIUS, 0, 2 * Math.PI);
-  ctx.strokeStyle = RING_COLOR;
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(x, y, RING_INNER_RADIUS, 0, 2 * Math.PI);
-  ctx.strokeStyle = ctx.fillStyle = "#000000";
-  ctx.stroke();
-}
-
-      // Update the position of each planet
-      function updatePlanets() {
-        for (var i = 1; i < 8; i++) {
-          planetAngle[i] += PLANET_SPEED[i] * Math.PI / 180;
+     // Update the position of each planet
+    function updatePlanets() {
+		for (var i = 1; i < 10; i++) {
+			planetAngle[i] += PLANET_SPEED[i] * Math.PI / 180;
         }
-      }
+     }
 
-      
       // Draw the solar system
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawSun();
-  for (var i = 1; i < 8; i++) {
-    drawPlanet(i);
-    if (i === 6) { // If the planet is Saturn, draw its ring
-      //drawRing();
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		drawSun();
+		for (var i = 1; i < 10; i++) {
+			drawPlanet(i);
+		}
+	
+		updatePlanets();
+		requestAnimationFrame(draw);
+	}
+
+    // Initialize the planet angles
+    for (var i = 0; i < 10; i++) {
+		planetAngle.push(Math.random() * 2 * Math.PI);
     }
-  }
-  updatePlanets();
-  requestAnimationFrame(draw);
-}
 
-
-      // Initialize the planet angles
-      for (var i = 0; i < 8; i++) {
-        planetAngle.push(Math.random() * 2 * Math.PI);
-      }
-
-      // Start the simulation
-      draw();
+    // Start the simulation
+    draw();
     </script>
   </body>
 </html>
