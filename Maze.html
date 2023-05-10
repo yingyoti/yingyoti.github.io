@@ -71,7 +71,12 @@
 
 		// Draw the player
 		function drawPlayer() {
-			ctx.fillStyle = "green";
+			var r = Math.floor(Math.random() * 256);
+			var g = Math.floor(Math.random() * 256);
+			var b = Math.floor(Math.random() * 256);
+			
+			// Set fill style to random color
+			ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
 			ctx.beginPath();
 			ctx.arc((playerX + 0.5) * tileSize, (playerY + 0.5) * tileSize, tileSize / 4, 0, 2 * Math.PI); // updated circle size
 			ctx.fill();
@@ -123,11 +128,15 @@
 				if (playerX == 66 && playerY == 29) {
 					setTimeout(() => {
 						alert('Congratulations! You have won!');
-					}, 500);
+					}, 200);
 				}
 			}
 		});
 
+		setInterval(() => {
+		  drawPlayer();
+		}, 0.5)
+		
 		// Draw the initial maze and player
 		drawMaze();
 		drawPlayer();
