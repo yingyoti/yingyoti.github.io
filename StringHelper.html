@@ -15,15 +15,19 @@
 	table {
 		width:100%;
 	}
+
+	th {
+		background-color:#A3E4D7;
+	}
 </style>
 </head>
 <body>
     <table>
 	<tr>
-	<td style="width:25%"><h4>Function</h4></td>
-	<td style="width:25%"><h4>Input</h4></td>
-	<td style="width:25%"><h4>Run</h4></td>
-	<td style="width:25%"><h4>Result</h4></td>
+	<th style="width:25%"><h4>Function</h4></th>
+	<th style="width:25%"><h4>Input</h4></th>
+	<th style="width:25%"><h4>Run</h4></th>
+	<th style="width:25%"><h4>Result</h4></th>
 	</tr>
 	<tr>
 	<td><h3>Count Character</h3></td>
@@ -52,6 +56,17 @@
 	<td><button id="lowerToUpperBtn">Convert to Upper Case</button><br/>
     <button id="upperToLowerBtn">Convert to Lower Case</button></td>
 	<td><p id="resultCase"></p></td>
+	</tr>
+	<tr>
+	<td><h3>Replace String</h3></td>
+	<td>
+	<textarea id="inputTextReplace" rows="5" cols="30"></textarea><br/>
+	<input type="text" id="replaceText" placeholder="Enter string to replace">
+	<input type="text" id="newText" placeholder="Enter new string">
+	</td>
+	<td><button id="replaceBtn">Replace</button></td>
+	<td><p id="resultReplace"></p></td>
+	<td>&nbsp;</td>
 	</tr>
     </table>
 
@@ -109,6 +124,21 @@
         upperToLowerBtn.addEventListener('click', () => {
             const text = inputTextCase.value.toLowerCase();
             resultCase.textContent = text;
+        });
+
+	// Replace String
+        const inputTextReplace = document.getElementById('inputTextReplace');
+        const replaceText = document.getElementById('replaceText');
+        const newText = document.getElementById('newText');
+        const replaceBtn = document.getElementById('replaceBtn');
+        const resultReplace = document.getElementById('resultReplace');
+
+        replaceBtn.addEventListener('click', () => {
+            const text = inputTextReplace.value;
+            const replaceStr = replaceText.value;
+            const newStr = newText.value;
+            const replacedText = text.replace(replaceStr, newStr);
+            resultReplace.textContent = replacedText;
         });
     </script>
 </body>
