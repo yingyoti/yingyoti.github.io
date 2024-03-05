@@ -24,12 +24,25 @@
 			margin: 0;
 			padding: 0;
 		}
+
+table, th, tr, td {
+  		border: 2px solid black;
+		align:center;
+		text-align:center;
+	}
+table {
+		width:100%;
+	}
 	</style>
 </head>
 <body>
 	<table>
-		<th><td colspan="2"><h1>Hello! This My Chat GPT Gallery</h1></td></th>
-		<tr><td>Balloon Shooting</td><td><a href="https://yingyoti.github.io/BalloonShooting.html">Balloon Shooting</a></td></tr>
+		<thead>
+			<tr><th colspan="2"><h1>Hello! This My Chat GPT Gallery</h1></th></tr>
+		</thead>
+ 		<tbody>
+		<tr><td style="width:50%">Balloon Shooting</td>
+		<td style="text-align:center"><a href="https://yingyoti.github.io/BalloonShooting.html">Balloon Shooting</a></td></tr>
 		<tr><td>Clock</td><td><a href="https://yingyoti.github.io/Clock.html">Clock</a></td></tr>
 		<tr><td>Dice Roll</td><td><a href="https://yingyoti.github.io/DiceRoll.html">Dice Roll</a></td></tr>
 		<tr><td>Maze</td><td><a href="https://yingyoti.github.io/Maze.html">Maze</a></td></tr>
@@ -39,6 +52,7 @@
 		<tr><td>World Clocks</td><td><a href="https://yingyoti.github.io/WorldClocks.html">World Clocks</a></td></tr>
 		<tr><td>XO</td><td><a href="https://yingyoti.github.io/XO.html">XO</a></td></tr>
 		<tr><td>String Helper</td><td><a href="https://yingyoti.github.io/StringHelper.html">String Helper</a></td></tr>
+		</tbody>
 	</table>
 	</body>
 </html>

@@ -5,35 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>String Manipulation</title>
 	<style>
+
 	table, th, tr, td {
-  		border: 1px solid black;
-		align:center
+  		border: 2px solid black;
+		align:center;
+		text-align:center;
 	}
 
-
+	table {
+		width:100%;
+	}
 </style>
 </head>
 <body>
-    <table style="border: 2px solid black;width:100%">
+    <table>
 	<tr>
-	<td><h4 style="text-align:center; width:300px">Function</h4></td>
-	<td><h4 style="text-align:center; width:300px">Input</h4></td>
-	<td><h4 style="text-align:center; width:300px">Run</h4></td>
-	<td><h4 style="text-align:center; width:300px">Result</h4></td>
+	<td style="width:25%"><h4>Function</h4></td>
+	<td style="width:25%"><h4>Input</h4></td>
+	<td style="width:25%"><h4>Run</h4></td>
+	<td style="width:25%"><h4>Result</h4></td>
 	</tr>
-	<tr style="align:center">
+	<tr>
 	<td><h3>Count Character</h3></td>
 	<td><textarea id="inputText" rows="5" cols="50"></textarea></td>
 	<td><p>Number of characters (excluding spaces): <span id="charCount">0</span></p></td>
 	<td>&nbsp;</td>
 	</tr>
-	<tr style="align:center">
+	<tr>
 	<td><h3>Remove Space</h3></td>
 	<td><textarea id="inputTextRemove" rows="5" cols="50"></textarea></td>
 	<td><button id="removeSpacesBtn">Remove Spaces</button></td>
 	<td><p id="resultRemove"></p></td>
 	</tr>
-	<tr style="align:center">
+	<tr>
 	<td><h3>Split String</h3></td>
 	<td>
 	<textarea id="inputTextSplit" rows="5" cols="50"></textarea><br/>
@@ -42,7 +46,7 @@
 	<td><button id="splitBtn">Split</button></td>
 	<td><p id="resultSplit"></p></td>
 	</tr>
-	<tr style="align:center">
+	<tr>
 	<td><h3>Convert String</h3></td>
 	<td><textarea id="inputTextCase" rows="5" cols="50"></textarea></td>
 	<td><button id="lowerToUpperBtn">Convert to Upper Case</button><br/>
