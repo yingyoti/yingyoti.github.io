@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Manipulation</title>
+	<style>
+	table, th, tr, td {
+  		border: 1px solid black;
+		align:center
+	}
+
+
+</style>
+</head>
+<body>
+    <table style="border: 2px solid black;width:100%">
+	<tr>
+	<td><h4 style="text-align:center; width:300px">Function</h4></td>
+	<td><h4 style="text-align:center; width:300px">Input</h4></td>
+	<td><h4 style="text-align:center; width:300px">Run</h4></td>
+	<td><h4 style="text-align:center; width:300px">Result</h4></td>
+	</tr>
+	<tr style="align:center">
+	<td><h3>Count Character</h3></td>
+	<td><textarea id="inputText" rows="5" cols="50"></textarea></td>
+	<td><p>Number of characters (excluding spaces): <span id="charCount">0</span></p></td>
+	<td>&nbsp;</td>
+	</tr>
+	<tr style="align:center">
+	<td><h3>Remove Space</h3></td>
+	<td><textarea id="inputTextRemove" rows="5" cols="50"></textarea></td>
+	<td><button id="removeSpacesBtn">Remove Spaces</button></td>
+	<td><p id="resultRemove"></p></td>
+	</tr>
+	<tr style="align:center">
+	<td><h3>Split String</h3></td>
+	<td>
+	<textarea id="inputTextSplit" rows="5" cols="50"></textarea><br/>
+	<input type="text" id="splitChar" placeholder="Enter split character">
+	</td>
+	<td><button id="splitBtn">Split</button></td>
+	<td><p id="resultSplit"></p></td>
+	</tr>
+	<tr style="align:center">
+	<td><h3>Convert String</h3></td>
+	<td><textarea id="inputTextCase" rows="5" cols="50"></textarea></td>
+	<td><button id="lowerToUpperBtn">Convert to Upper Case</button><br/>
+    <button id="upperToLowerBtn">Convert to Lower Case</button></td>
+	<td><p id="resultCase"></p></td>
+	</tr>
+    </table>
+
+    <script>
+        // Count Characters (Excluding Spaces)
+        const inputText = document.getElementById('inputText');
+        const charCount = document.getElementById('charCount');
+
+        inputText.addEventListener('input', () => {
+            const text = inputText.value.replace(/\s/g, ''); // Remove spaces
+            charCount.textContent = text.length;
+        });
+
+        // Remove Spaces
+        const inputTextRemove = document.getElementById('inputTextRemove');
+        const removeSpacesBtn = document.getElementById('removeSpacesBtn');
+        const resultRemove = document.getElementById('resultRemove');
+
+        removeSpacesBtn.addEventListener('click', () => {
+            const text = inputTextRemove.value.replace(/\s/g, ''); // Remove spaces
+            resultRemove.textContent = text;
+        });
+
+        // Split String
+        const inputTextSplit = document.getElementById('inputTextSplit');
+        const splitCharInput = document.getElementById('splitChar');
+        const splitBtn = document.getElementById('splitBtn');
+        const resultSplit = document.getElementById('resultSplit');
+
+        splitBtn.addEventListener('click', () => {
+            const text = inputTextSplit.value;
+            const splitChar = splitCharInput.value;
+            const parts = text.split(splitChar);
+
+            resultSplit.innerHTML = ''; // Clear previous results
+
+            parts.forEach(part => {
+                const li = document.createElement('li');
+                li.textContent = part;
+                resultSplit.appendChild(li);
+            });
+        });
+
+	// Convert Case
+        const inputTextCase = document.getElementById('inputTextCase');
+        const lowerToUpperBtn = document.getElementById('lowerToUpperBtn');
+        const upperToLowerBtn = document.getElementById('upperToLowerBtn');
+        const resultCase = document.getElementById('resultCase');
+
+        lowerToUpperBtn.addEventListener('click', () => {
+            const text = inputTextCase.value.toUpperCase();
+            resultCase.textContent = text;
+        });
+
+        upperToLowerBtn.addEventListener('click', () => {
+            const text = inputTextCase.value.toLowerCase();
+            resultCase.textContent = text;
+        });
+    </script>
+</body>
+</html>
