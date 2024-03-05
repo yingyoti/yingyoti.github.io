@@ -54,7 +54,7 @@
 	<td><p id="resultCase"></p></td>
 	</tr>
 	<tr>
-	<td><h3>Replace String</h3></td>
+	<td><h3>Replace String<br/>new line (\n)</h3></td>
 	<td><textarea id="inputTextReplace" rows="5" cols="30"></textarea><br/><input type="text" id="replaceText" placeholder="Enter string to replace">
 	<input type="text" id="newText" placeholder="Enter new string"></td>
 	<td><button id="replaceBtn">Replace</button></td>
@@ -138,12 +138,17 @@
         const resultReplace = document.getElementById('resultReplace');
 
         replaceBtn.addEventListener('click', () => {
-            const text = inputTextReplace.value;
-            const replaceStr = replaceText.value;
-            const newStr = newText.value;
-            const replacedText = text.replace(replaceStr, newStr);
-            resultReplace.textContent = replacedText;
-        });
+        	const text = inputTextReplace.value;
+        	const replaceStr = replaceText.value;
+        	let newStr = newText.value;
+        	// Check if the replacement string is "\n" and replace it with an actual newline character
+        	if (newStr === "\\n") {
+            		newStr = "\n";
+        	}
+        	// Using regular expression with global flag (/g) to replace all occurrences
+        	const replacedText = text.replace(new RegExp(replaceStr, 'g'), newStr.replace(/\n/g, "<br>"));
+        	resultReplace.innerHTML = replacedText;
+    	});
 
 	// Character Classification
         const inputTextClassify = document.getElementById('inputTextClassify');
