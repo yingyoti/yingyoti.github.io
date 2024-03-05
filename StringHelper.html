@@ -68,6 +68,18 @@
 	<td><p id="resultReplace"></p></td>
 	<td>&nbsp;</td>
 	</tr>
+	<tr>
+            <td><h3>Character Classify and Count</h3></td>
+            <td><textarea id="inputTextClassify" rows="5" cols="50"></textarea></td>
+            <td><button id="classifyBtn">Classify Characters</button></td>
+            <td><div id="charClassification"></div></td>
+        </tr>
+	<tr>
+	<td><h3>Find Word and Count</h3></td>
+	<td><textarea id="inputTextWord" rows="5" cols="50"></textarea></td>
+	<td><button id="findWordBtn">Find and Count</button></td>
+	<td><p>Indices of word: <span id="wordIndices"></span><br>Count of word: <span id="wordCount"></span></p></td>
+	</tr>
     </table>
 
     <script>
@@ -139,6 +151,50 @@
             const newStr = newText.value;
             const replacedText = text.replace(replaceStr, newStr);
             resultReplace.textContent = replacedText;
+        });
+
+	// Character Classification
+        const inputTextClassify = document.getElementById('inputTextClassify');
+        const classifyBtn = document.getElementById('classifyBtn');
+        const charClassification = document.getElementById('charClassification');
+
+        classifyBtn.addEventListener('click', () => {
+            const text = inputTextClassify.value;
+            const charMap = new Map();
+
+            for (const char of text) {
+                if (charMap.has(char)) {
+                    charMap.set(char, charMap.get(char) + 1);
+                } else {
+                    charMap.set(char, 1);
+                }
+            }
+
+            let classificationResult = '';
+            charMap.forEach((count, char) => {
+                classificationResult += `${char}: ${count}, `;
+            });
+
+            charClassification.textContent = classificationResult;
+        });
+
+	// Find Word and Count
+        const inputTextWord = document.getElementById('inputTextWord');
+        const findWordBtn = document.getElementById('findWordBtn');
+        const wordIndices = document.getElementById('wordIndices');
+        const wordCount = document.getElementById('wordCount');
+
+        findWordBtn.addEventListener('click', () => {
+            const text = inputTextWord.value;
+            const word = prompt("Enter the word to find:");
+            const indices = [];
+            let index = text.indexOf(word);
+            while (index !== -1) {
+                indices.push(index);
+                index = text.indexOf(word, index + 1);
+            }
+            wordIndices.textContent = indices.length > 0 ? indices.join(', ') : "Not found";
+            wordCount.textContent = indices.length;
         });
     </script>
 </body>
