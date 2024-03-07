@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex AR</title>
+    <style>
+        #arjsScene {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+    <a-scene
+        vr-mode-ui="enabled: false"
+        renderer="logarithmicDepthBuffer: true;"
+        embedded
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+        
+        <!-- HIRO Marker -->
+        <a-nft
+            type="nft"
+            url="https://raw.githubusercontent.com/AR-js-org/AR.js/master/dataNFT/hiro.patt"
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance=".01"
+            smoothThreshold="5">
+            <!-- Simple Cube Model -->
+            <a-box color="red" position="0 0.5 0" scale="0.5 0.5 0.5"></a-box>
+        </a-nft>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
+</html>
