@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whack-a-Mole Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e0f7fa;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 30px;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 20px;
+            justify-content: center;
+            margin: 40px auto;
+            width: 340px;
+        }
+        .hole {
+            width: 100px;
+            height: 100px;
+            background: #8d6e63;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px #5d4037;
+            transition: box-shadow 0.1s;
+        }
+        .hole:active {
+            box-shadow: 0 2px #5d4037;
+        }
+        .mole {
+            width: 60px;
+            height: 60px;
+            background: #ffca28;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            box-shadow: 0 2px #fbc02d;
+            border: 3px solid #fbc02d;
+        }
+        #score, #timer {
+            font-size: 1.2em;
+            margin: 10px;
+        }
+        #startBtn {
+            padding: 10px 30px;
+            font-size: 1em;
+            background: #26a69a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #startBtn:active {
+            background: #00897b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Whack-a-Mole!</h1>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 30</div>
+    <button id="startBtn">Start Game</button>
+    <div id="game"></div>
+
+    <script>
+        const game = document.getElementById('game');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        let score = 0;
+        let time = 30;
+        let moleTimer = null;
+        let countdownTimer = null;
+        let activeHole = null;
+        const holes = [];
+
+        // Create 9 holes
+        for (let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.classList.add('hole');
+            const mole = document.createElement('div');
+            mole.classList.add('mole');
+            // Add mole face features
+            mole.style.position = 'absolute';
+
+            // Triangle Ears (smaller and positioned for smaller face)
+            const leftEar = document.createElement('div');
+            leftEar.style.position = 'absolute';
+            leftEar.style.top = '-12px';
+            leftEar.style.left = '4px';
+            leftEar.style.width = '0';
+            leftEar.style.height = '0';
+            leftEar.style.borderLeft = '10px solid transparent';
+            leftEar.style.borderRight = '10px solid transparent';
+            leftEar.style.borderBottom = '16px solid #ffca28';
+
+            const rightEar = document.createElement('div');
+            rightEar.style.position = 'absolute';
+            rightEar.style.top = '-12px';
+            rightEar.style.left = '36px';
+            rightEar.style.width = '0';
+            rightEar.style.height = '0';
+            rightEar.style.borderLeft = '10px solid transparent';
+            rightEar.style.borderRight = '10px solid transparent';
+            rightEar.style.borderBottom = '16px solid #ffca28';
+
+            // Eyes (smaller and closer)
+            const leftEye = document.createElement('div');
+            leftEye.style.position = 'absolute';
+            leftEye.style.top = '18px';
+            leftEye.style.left = '13px';
+            leftEye.style.width = '7px';
+            leftEye.style.height = '7px';
+            leftEye.style.background = '#222';
+            leftEye.style.borderRadius = '50%';
+
+            const rightEye = document.createElement('div');
+            rightEye.style.position = 'absolute';
+            rightEye.style.top = '18px';
+            rightEye.style.left = '32px';
+            rightEye.style.width = '7px';
+            rightEye.style.height = '7px';
+            rightEye.style.background = '#222';
+            rightEye.style.borderRadius = '50%';
+
+            // Nose (smaller)
+            const nose = document.createElement('div');
+            nose.style.position = 'absolute';
+            nose.style.top = '28px';
+            nose.style.left = '22px';
+            nose.style.width = '7px';
+            nose.style.height = '5px';
+            nose.style.background = '#d84315';
+            nose.style.borderRadius = '50%';
+
+            // Mouth (smaller and centered)
+            const mouth = document.createElement('div');
+            mouth.style.position = 'absolute';
+            mouth.style.top = '38px';
+            mouth.style.left = '17px';
+            mouth.style.width = '18px';
+            mouth.style.height = '7px';
+            mouth.style.borderBottom = '2px solid #222';
+            mouth.style.borderRadius = '0 0 9px 9px';
+
+            // Teeth (smaller and centered under mouth)
+            const leftTooth = document.createElement('div');
+            leftTooth.style.position = 'absolute';
+            leftTooth.style.top = '45px';
+            leftTooth.style.left = '23px';
+            leftTooth.style.width = '4px';
+            leftTooth.style.height = '7px';
+            leftTooth.style.background = '#fff';
+            leftTooth.style.borderRadius = '1px';
+
+            const rightTooth = document.createElement('div');
+            rightTooth.style.position = 'absolute';
+            rightTooth.style.top = '45px';
+            rightTooth.style.left = '29px';
+            rightTooth.style.width = '4px';
+            rightTooth.style.height = '7px';
+            rightTooth.style.background = '#fff';
+            rightTooth.style.borderRadius = '1px';
+
+            // Add features to mole
+            mole.appendChild(leftEar);
+            mole.appendChild(rightEar);
+            mole.appendChild(leftEye);
+            mole.appendChild(rightEye);
+            mole.appendChild(nose);
+            mole.appendChild(mouth);
+            mole.appendChild(leftTooth);
+            mole.appendChild(rightTooth);
+            mole.classList.add('mole');
+            hole.appendChild(mole);
+            game.appendChild(hole);
+            holes.push(hole);
+
+            // Whack event
+            mole.addEventListener('click', () => {
+                if (mole.style.display === 'block') {
+                    score++;
+                    scoreDisplay.textContent = 'Score: ' + score;
+                    mole.style.display = 'none';
+                }
+            });
+        }
+
+        function showMole() {
+            if (activeHole) {
+                activeHole.firstChild.style.display = 'none';
+            }
+            const idx = Math.floor(Math.random() * holes.length);
+            activeHole = holes[idx];
+            activeHole.firstChild.style.display = 'block';
+        }
+
+        function startGame() {
+            score = 0;
+            time = 30;
+            scoreDisplay.textContent = 'Score: 0';
+            timerDisplay.textContent = 'Time: 30';
+            startBtn.disabled = true;
+
+            moleTimer = setInterval(showMole, 700);
+            countdownTimer = setInterval(() => {
+                time--;
+                timerDisplay.textContent = 'Time: ' + time;
+                if (time <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            clearInterval(moleTimer);
+            clearInterval(countdownTimer);
+            if (activeHole) activeHole.firstChild.style.display = 'none';
+            startBtn.disabled = false;
+            alert('Game Over! Your score: ' + score);
+        }
+
+        startBtn.addEventListener('click', startGame);
+    </script>
+</body>
+</html>
