@@ -66,9 +66,11 @@
 
         function newPiece() {
             const idx = Math.floor(Math.random() * tetrominos.length);
-            piece = tetrominos[idx];
-            pos = {x: Math.floor(cols/2) - Math.ceil(piece[0].length/2), y: 0};
-            piece.color = colors[idx];
+            piece = {
+                shape: tetrominos[idx],
+                color: colors[idx]
+            };
+            pos = {x: Math.floor(cols/2) - Math.ceil(piece.shape[0].length/2), y: 0};
         }
 
         function drawCell(x, y, color) {
@@ -76,19 +78,21 @@
             ctx.fillRect(x*scale, y*scale, scale-1, scale-1);
         }
 
+        // Update drawBoard to use piece.shape and piece.color
         function drawBoard() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
             for(let y=0; y<rows; y++)
                 for(let x=0; x<cols; x++)
                     if(board[y][x])
                         drawCell(x, y, board[y][x]);
-            for(let y=0; y<piece.length; y++)
-                for(let x=0; x<piece[y].length; x++)
-                    if(piece[y][x])
+            for(let y=0; y<piece.shape.length; y++)
+                for(let x=0; x<piece.shape[y].length; x++)
+                    if(piece.shape[y][x])
                         drawCell(pos.x+x, pos.y+y, piece.color);
         }
 
-        function collide(px=pos.x, py=pos.y, p=piece) {
+        // Update collide to use piece.shape
+        function collide(px=pos.x, py=pos.y, p=piece.shape) {
             for(let y=0; y<p.length; y++)
                 for(let x=0; x<p[y].length; x++)
                     if(p[y][x] &&
@@ -98,10 +102,11 @@
             return false;
         }
 
+        // Update mergePiece to use piece.shape and piece.color
         function mergePiece() {
-            for(let y=0; y<piece.length; y++)
-                for(let x=0; x<piece[y].length; x++)
-                    if(piece[y][x])
+            for(let y=0; y<piece.shape.length; y++)
+                for(let x=0; x<piece.shape[y].length; x++)
+                    if(piece.shape[y][x])
                         board[pos.y+y][pos.x+x] = piece.color;
         }
 
@@ -148,11 +153,12 @@
             }
         }
 
+        // Update rotatePiece to rotate only the shape
         function rotatePiece() {
             if(!gameOver) {
-                const rotated = rotate(piece);
+                const rotated = rotate(piece.shape);
                 if(!collide(pos.x, pos.y, rotated))
-                    piece = rotated;
+                    piece.shape = rotated;
                 drawBoard();
             }
         }
